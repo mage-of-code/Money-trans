@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface AccountsRepository extends JpaRepository<Account,Integer> {
-    Set<Account> findByUser(User user);
 
     @Override
     Optional<Account> findById(Integer integer);

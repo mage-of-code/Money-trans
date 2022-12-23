@@ -7,8 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Optional;
 
@@ -21,11 +22,9 @@ class CustomUserDetailsServiceTest {
 
     @Mock
     private UsersRepository usersRepository;
-
     @InjectMocks
-    CustomUserDetailsService customUserDetailsService;
-
-    @BeforeEach
+    private CustomUserDetailsService customUserDetailsService;
+     @BeforeEach
     void setUp() {
         openMocks(this);
     }

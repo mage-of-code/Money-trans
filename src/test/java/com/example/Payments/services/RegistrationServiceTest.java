@@ -1,10 +1,11 @@
 package com.example.Payments.services;
 
+import com.example.Payments.dto.LoginInfo;
 import com.example.Payments.models.Account;
+import com.example.Payments.models.AccountType;
 import com.example.Payments.models.Role;
 import com.example.Payments.models.User;
-import com.example.Payments.models.enums.TypeOfAccount;
-import com.example.Payments.repositories.AccountsRepository;
+import com.example.Payments.repositories.AccountTypeRepository;
 import com.example.Payments.repositories.RoleRepository;
 import com.example.Payments.repositories.UsersRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,12 +13,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
-
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,13 +30,15 @@ class RegistrationServiceTest {
     @Mock
     private UsersRepository usersRepository;
     @Mock
-    private  AccountService accountService;
-    @Mock
-    private AccountsRepository accountsRepository;
+    private UserService userService;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
     private RoleRepository roleRepository;
+    @Mock
+    private ModelMapper modelMapper;
+    @Mock
+    private AccountTypeRepository accountTypeRepository;
 
     @InjectMocks
     RegistrationService registrationService;
@@ -44,35 +49,40 @@ class RegistrationServiceTest {
     }
 
     @Test
-    void register(){
-       User newUser = new User();
+    void register() {
 
-        TypeOfAccount typeOfAccount = TypeOfAccount.INDIVIDUAL;
-        Account account = new Account();
-        account.setUser(newUser);
-        account.setAccountType(typeOfAccount);
-
+        LoginInfo loginInfo = new LoginInfo();
+        User user = new User();
+        user.setPassword("password");
         Role role = new Role();
-        role.setRoleSignature("ROLE_USER");
-        newUser.setPassword("password");
-        newUser.setRoles(Collections.singleton(role));
-        newUser.setAccounts(Collections.singleton(account));
 
-        when(passwordEncoder.encode(eq("password"))).thenReturn("password");
-        when(roleRepository.findByRoleSignature(eq("ROLE_USER"))).thenReturn(role);
-        when(accountService.createAccount(eq(newUser),eq(typeOfAccount))).thenReturn(account);
+
+        when(modelMapper.map(loginInfo, User.class)).thenReturn(user);
+        when(passwordEncoder.encode(user.getPassword())).thenReturn("encodedPassword");
+        when(roleRepository.findByRoleSignature("ROLE_USER")).thenReturn(role);
+
+        AccountType accountType = new AccountType("checking");
+        Account account = new Account();
+
+        when(accountTypeRepository.findByName(eq("checking"))).thenReturn(Optional.of(accountType));
+        when(userService.createAccount(accountType)).thenReturn(account);
+
+        User expectedUser = new User();
+        expectedUser.setPassword("encodedPassword");
+        expectedUser.setRoles(Collections.singleton(role));
+        account.setAccountType(accountType);
+        expectedUser.setAccounts(Collections.singleton(account));
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
 
-        registrationService.register(newUser,typeOfAccount);
-        verify(usersRepository).save(captor.capture());
+        registrationService.register(loginInfo);
 
-        assertEquals(newUser, captor.getValue());
 
-        ArgumentCaptor<Account> captor2= ArgumentCaptor.forClass(Account.class);
-        verify(accountsRepository).save(captor2.capture());
+        verify(userService).addAccountToUser(captor.capture(), eq(account));
+        assertEquals(expectedUser.getPassword(), captor.getValue().getPassword());
+        assertTrue(expectedUser.getRoles().containsAll(captor.getValue().getRoles()));
 
-        assertEquals(account,captor2.getValue());
+        verify(usersRepository).save(user);
 
     }
 

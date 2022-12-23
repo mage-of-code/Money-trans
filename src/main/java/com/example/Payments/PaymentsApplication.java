@@ -5,9 +5,6 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
-
-import javax.persistence.EntityManagerFactory;
 
 import static org.modelmapper.config.Configuration.AccessLevel.PRIVATE;
 
@@ -30,6 +27,11 @@ public class PaymentsApplication {
 
 		return mapper;
 	}
+
+
+
+
+
 
 
 

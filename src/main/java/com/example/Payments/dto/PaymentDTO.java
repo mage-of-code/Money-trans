@@ -1,67 +1,26 @@
 package com.example.Payments.dto;
 
+import lombok.Data;
+
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
-import java.util.Objects;
 
+@Data
 public class PaymentDTO {
 
-    @NotNull(message = "payer account should not be null")
-    private AccountDTO payerAccount;
+    @NotEmpty(message = "Введите номер счета отправителя")
+    private String accountNumberOfPayer;
 
-    @NotNull(message = "receiver account should not be null")
-    private AccountDTO receiverAccount;
+    @NotEmpty(message = "Введите номер счета получателя")
+    private String accountNumberOfReceiver;
 
-    @Min(value = 0, message = "amount should be >0")
+    @Min(value = 0, message = "Суммма перевода должна быть больше 0")
     private BigDecimal amount;
 
-    @Size(min = 0,max = 150, message = "comment should be less than 150 characters")
+    @Size(min = 0, max = 150, message = "Максимальный размер комментария - 150 символов")
     private String comment;
-
-    public AccountDTO getPayerAccount() {
-        return payerAccount;
-    }
-
-    public void setPayerAccount(AccountDTO payerAccount) {
-        this.payerAccount = payerAccount;
-    }
-
-    public AccountDTO getReceiverAccount() {
-        return receiverAccount;
-    }
-
-    public void setReceiverAccount(AccountDTO receiverAccount) {
-        this.receiverAccount = receiverAccount;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PaymentDTO that = (PaymentDTO) o;
-        return Objects.equals(payerAccount, that.payerAccount) && Objects.equals(receiverAccount, that.receiverAccount) && Objects.equals(amount, that.amount) && Objects.equals(comment, that.comment);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(payerAccount, receiverAccount, amount, comment);
-    }
 }
+

@@ -1,6 +1,7 @@
 package com.example.Payments.security;
 
 import com.example.Payments.models.User;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -8,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
-
 public class UserDetailsImpl implements UserDetails {
 
     private User user;
